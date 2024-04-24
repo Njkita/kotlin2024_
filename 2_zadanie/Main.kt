@@ -16,20 +16,24 @@ fun Geturl (Stringurl: String): String {
     val compound = url.openConnection()
     val allline = StringBuilder()
 
+    //считывание данных с сервера, библиотечная функция
     BufferedReader(InputStreamReader(compound.getInputStream())).use { reader ->
         var line: String?
         while (reader.readLine().also { line = it } != null) {
             allline.append(line)
         }
     }
-
     return allline.toString()
 }
 
+//извлечение гиперссылок из строки
 fun derivelinks(html: String): List<String> {
+    //Фактический URL-адрес: регулярное выражение для ссылок для нахождения тегов <a> и их атрибутов href в HTML.:
     val linkRegular = "<a\\s+(?:[^>]*?\\s+)?href=\"([^\"]*)\"".toRegex()
+    //поиск совпадений
     return linkRegular.findAll(html).map { output ->
         val link = output.groups[1]?.value ?: ""
+        //преобразование относительного URL-адреса в абсолютный
         if (link.startsWith("/")) "https://en.wikipedia.org" + link else link
     }.toList()
 }
